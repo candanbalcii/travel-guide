@@ -2,51 +2,56 @@ import {
   Grid,
   TextField,
   Typography,
-  MenuItem,
-  Select,
-  InputLabel,
+  Box,
   FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Formik, Form } from 'formik';
 import SubmitButton from '../components/SubmitButton';
+import { signupSchema } from '../schemas/signupSchema';
+import FormInput from '../components/FormInput';
 
 const Signup = () => {
-  const [role, setRole] = useState('tester'); // Kullanıcının rolü
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [companyName, setCompanyName] = useState('');
   const [error, setError] = useState('');
-
   const navigate = useNavigate();
 
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    setSubmitting(true);
+    console.log('Submitting signup request...');
 
     try {
       const response = await fetch('http://localhost:5000/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email,
-          password,
-          role,
-          company_name: companyName,
+          email: values.email,
+          password: values.password,
+          role: values.role,
+          company_name: values.company_name,
         }),
       });
 
       if (response.ok) {
+        const data = await response.json(); // Sunucudan dönen veriyi al
+
         console.log('Signup successful!');
-        // Kullanıcıyı yönlendirin veya başka işlemler yapın
+        localStorage.setItem('user', JSON.stringify(data));
+        navigate('/success'); // Örnek yönlendirme
       } else {
         console.error('Error during signup');
+        setError('Signup failed. Please try again.');
       }
     } catch (error) {
       console.error('An error occurred:', error);
+      setError('An error occurred. Please try again later.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -69,58 +74,80 @@ const Signup = () => {
         <Typography variant="h4" gutterBottom>
           Get Started With Us
         </Typography>
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="role-label">Role</InputLabel>
-            <Select
-              labelId="role-label"
-              value={role}
-              onChange={handleRoleChange}
-              required
-            >
-              <MenuItem value="tester">Tester</MenuItem>
-              <MenuItem value="owner">Software Owner</MenuItem>
-            </Select>
-          </FormControl>
 
-          <TextField
-            label="Email"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            margin="normal"
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {role === 'owner' && (
-            <TextField
-              label="Company Name"
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              required
-            />
+        <Formik
+          initialValues={{
+            email: '',
+            password: '',
+            role: 'tester',
+            company_name: '',
+          }}
+          validationSchema={signupSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ values, handleChange, errors, touched, isSubmitting }) => (
+            <Form>
+              <FormInput
+                label="Email"
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+                error={touched.email && Boolean(errors.email)}
+                helperText={touched.email && errors.email}
+              />
+              <FormInput
+                label="Password"
+                name="password"
+                type="password"
+                fullWidth
+                value={values.password}
+                onChange={handleChange}
+                error={touched.password && Boolean(errors.password)}
+                helperText={touched.password && errors.password}
+              />
+
+              {values.role === 'owner' && (
+                <TextField
+                  label="Company Name"
+                  name="company_name"
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  value={values.company_name}
+                  onChange={handleChange}
+                  error={touched.company_name && Boolean(errors.company_name)}
+                  helperText={touched.company_name && errors.company_name}
+                  required
+                />
+              )}
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="keepLoggedIn"
+                      checked={values.keepLoggedIn}
+                      onChange={handleChange}
+                      color="primary"
+                    />
+                  }
+                  label="Keep me logged in"
+                />
+              </Box>
+              {error && (
+                <Typography color="error" variant="body2" margin="normal">
+                  {error}
+                </Typography>
+              )}
+              <SubmitButton text="Sign In" disabled={isSubmitting} />
+            </Form>
           )}
-
-          {error && (
-            <Typography color="error" variant="body2" margin="normal">
-              {error}
-            </Typography>
-          )}
-
-          <SubmitButton text="Sign In" />
-        </form>
+        </Formik>
       </Grid>
 
       {/* Sağdaki resim kısmı */}
@@ -130,7 +157,7 @@ const Signup = () => {
         sm={6}
         md={7}
         sx={{
-          backgroundImage: 'url(/images/signup.webp)',
+          backgroundImage: 'url(/images/kayıt.jpg  )',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: '100vh',

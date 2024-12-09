@@ -4,14 +4,16 @@ const SubmitButton = ({ text, ...props }) => {
   return (
     <Button
       sx={{
-        backgroundColor: '#F4A261',
+        backgroundColor: '#4682B4',
         width: '100%',
         padding: '12px',
         marginTop: '16px',
         borderRadius: '8px',
         '&:hover': {
-          backgroundColor: '#e07b39',
+          backgroundColor: '#355C7D ',
         },
+        display: 'flex',
+        justifyContent: 'center',
       }}
       type="submit"
       variant="contained"

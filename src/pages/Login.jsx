@@ -6,39 +6,34 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-
+import React from 'react';
 import FormInput from '../components/FormInput';
 import SubmitButton from '../components/SubmitButton';
 import { useNavigate } from 'react-router-dom';
+import { Form, Formik } from 'formik';
 import { loginSchema } from '../schemas/loginSchema';
 
 const Login = () => {
-  //stateleri tutmak için usestate
-  const [email, setEmail] = useState(' ');
-  const [password, setPassword] = useState('');
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
-  const [error, setError] = useState('');
-
-  //form submit için fonksiyon
   const navigate = useNavigate();
-  const handleSubmit = async (event) => {
-    event.preventDefault();
 
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    setSubmitting(true);
     console.log('Submitting login request...');
 
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful!', data);
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user)); // Kullanıcı bilgilerini sakla
 
         if (data.user.role === 'tester') {
           navigate('/tester-dashboard');
@@ -47,13 +42,14 @@ const Login = () => {
         }
       } else {
         const errorData = await response.json();
+        setErrors({ email: errorData.message });
         console.error('Login failed:', errorData.message);
-        setError(errorData.message);
       }
     } catch (error) {
+      setErrors({ email: 'Login failed due to network error.' });
       console.error('Fetch error:', error);
-      setError('An unexpected error occurred.');
     }
+    setSubmitting(false);
   };
 
   return (
@@ -64,14 +60,14 @@ const Login = () => {
         sm={6}
         md={7}
         sx={{
-          backgroundImage: 'url(/images/preview.webp)',
+          backgroundImage: 'url(/images/plane.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: '100vh',
         }}
       ></Grid>
 
-      {/*Form section*/}
+      {/* Form section */}
       <Grid
         item
         xs={12}
@@ -91,52 +87,66 @@ const Login = () => {
             Welcome!
           </Typography>
           <Typography variant="h6" gutterBottom>
-            Don't have an account yet?{'  '}
+            Don't have an account yet?{' '}
             <Link
               href="/signup"
               variant="body2"
-              sx={{ textDecoration: 'none', color: '#F4A261' }}
+              sx={{ textDecoration: 'none', color: '#355C7D' }}
             >
               Sign Up
             </Link>
           </Typography>
-
-          <form onSubmit={handleSubmit}>
-            <FormInput
-              label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            ></FormInput>
-            <FormInput
-              label="Password"
-              type="password"
-              value={password}
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            ></FormInput>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={keepLoggedIn}
-                    onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                    color="primary"
+          <Formik
+            initialValues={{ email: '', password: '', keepLoggedIn: false }}
+            validationSchema={loginSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ values, handleChange, errors, touched, isSubmitting }) => (
+              <Form>
+                <FormInput
+                  label="Email"
+                  name="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
+                />
+                <FormInput
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={values.password}
+                  required
+                  onChange={handleChange}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="keepLoggedIn"
+                        checked={values.keepLoggedIn}
+                        onChange={handleChange}
+                        color="primary"
+                      />
+                    }
+                    label="Keep me logged in"
                   />
-                }
-                label="Keep me logged in"
-              ></FormControlLabel>
-              <Link href="#" variant="body2" sx={{ color: '#F4A261' }}>
-                Forgot password?
-              </Link>
-            </Box>
-            <SubmitButton text="Login" />
-          </form>
+                  <Link href="#" variant="body2" sx={{ color: '#355C7D' }}>
+                    Forgot password?
+                  </Link>
+                </Box>
+                <SubmitButton text="Login" disabled={isSubmitting} />
+              </Form>
+            )}
+          </Formik>
         </Box>
       </Grid>
     </Grid>

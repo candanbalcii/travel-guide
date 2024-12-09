@@ -1,17 +1,20 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import OwnerDashboard from './pages/OwnerDashboard';
-import TesterDashboard from './pages/TesterDashboard';
+import WelcomePage from './pages/WelcomePage';
+import HomePage from './pages/HomePage';
+
+import Navbar from './components/Navbar'; // Import Navbar component
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
+        <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-        <Route path="/tester-dashboard" element={<TesterDashboard />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </Router>
   );
