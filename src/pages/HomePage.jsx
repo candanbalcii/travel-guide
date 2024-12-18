@@ -1,31 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import {
-  TextField,
-  Button,
-  Rating,
-  Typography,
-  Box,
-  CircularProgress,
-} from '@mui/material';
-import { Info as InfoIcon } from '@mui/icons-material';
 import axios from 'axios';
+import { Box, Typography, Button, CircularProgress, TextField } from '@mui/material';
+import Rating from '@mui/material/Rating';
+import InfoIcon from '@mui/icons-material/Info';
+import L from 'leaflet'; // leaflet'i import etmeniz gerekebilir
+import 'leaflet/dist/leaflet.css';
 
-const MapComponent = ({ attractions, setAttractions }) => {
+const HomePage = () => {
+  const [attractions, setAttractions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Overpass API için sorgu
+  const query = `
+    [out:json];
+    node["tourism"](39.6,32.5,40.1,33.0);
+    out body;
+  `;
+
+  useEffect(() => {
+    const fetchAttractions = async () => {
+      try {
+        const response = await axios.get(
+          'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query)
+        );
+
+        if (response.data && response.data.elements) {
+          const locations = response.data.elements.filter(location => 
+            location.lat !== undefined && location.lon !== undefined // Verilerin doğru formatta olduğundan emin ol
+          ).map(location => ({
+            id: location.id,
+            name: location.tags.name,
+            description: location.tags.description || "Açıklama yok",
+            latitude: location.lat,
+            longitude: location.lon,
+          }));
+          
+          setAttractions(locations); // Attractions verisini state'e kaydediyoruz
+        } else {
+          setError('Veriler alınamadı.');
+        }
+      } catch (err) {
+        setError('Veriler alınırken hata oluştu.');
+        console.error('Veriler alınırken hata oluştu:', err);
+      }
+    };
+
+    fetchAttractions();
+  }, [query]); // query değişkenine bağlı olarak efekt tetiklenir
+
   const handleSubmitReview = async () => {
     if (!selectedLocation) return;
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5000/reviews`, {
+      const response = await axios.post('http://localhost:5000/reviews', {
         locationId: selectedLocation.id,
         rating,
         review,
@@ -40,25 +73,39 @@ const MapComponent = ({ attractions, setAttractions }) => {
     }
   };
 
+  // Özel ikonunuzu buraya ekleyin
+  const customIcon = new L.Icon({
+    iconUrl: '/images/pin.png', // Buraya özel ikonun yolunu koyun
+    iconSize: [32, 32], // İkonun boyutları
+    iconAnchor: [16, 32], // İkonun yerleşimi
+    popupAnchor: [0, -32], // Popup'un yerleşimi
+  });
+
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <MapContainer
-        center={[39.9251, 32.8369]}
+        center={[39.9251, 32.8369]} // Başlangıç noktası (Ankara, Türkiye)
         zoom={12}
         style={{ width: '70%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {attractions.map((location) => (
-          <Marker
-            key={location.id}
-            position={[location.latitude, location.longitude]}
-            eventHandlers={{
-              click: () => setSelectedLocation(location),
-            }}
-          >
-            <Popup>{location.name}</Popup>
-          </Marker>
-        ))}
+        
+        {attractions.length > 0 ? (
+          attractions.map((location) => (
+            <Marker
+              key={location.id}
+              position={[location.latitude, location.longitude]}
+              icon={customIcon} // Özel ikonu burada kullanıyoruz
+              eventHandlers={{
+                click: () => setSelectedLocation(location),
+              }}
+            >
+              <Popup>{location.name}</Popup>
+            </Marker>
+          ))
+        ) : (
+          <div>No attractions available</div>
+        )}
       </MapContainer>
 
       <div
@@ -146,97 +193,6 @@ const MapComponent = ({ attractions, setAttractions }) => {
           </div>
         )}
       </div>
-    </div>
-  );
-};
-
-const HomePage = () => {
-  const [countries, setCountries] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [attractions, setAttractions] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/countries');
-        setCountries(response.data);
-      } catch (error) {
-        setError('Ülkeler alınırken bir hata oluştu.');
-      }
-    };
-
-    fetchCountries();
-  }, []);
-
-  useEffect(() => {
-    const fetchCities = async () => {
-      if (!selectedCountry) return;
-
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/cities/${selectedCountry}`
-        );
-        setCities(response.data);
-      } catch (error) {
-        setError('Şehirler alınırken bir hata oluştu.');
-      }
-    };
-
-    fetchCities();
-  }, [selectedCountry]);
-
-  useEffect(() => {
-    const fetchAttractions = async () => {
-      if (!selectedCity) return;
-
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/attractions/${selectedCity}`
-        );
-        setAttractions(response.data);
-      } catch (error) {
-        setError('Mekanlar alınırken bir hata oluştu.');
-      }
-    };
-
-    fetchAttractions();
-  }, [selectedCity]);
-
-  return (
-    <div>
-      <h1>Turistik Mekanları Keşfedin</h1>
-
-      <select
-        onChange={(e) => setSelectedCountry(e.target.value)}
-        value={selectedCountry}
-      >
-        <option value="">Ülke Seçin</option>
-        {countries.map((country) => (
-          <option key={country.id} value={country.id}>
-            {country.name}
-          </option>
-        ))}
-      </select>
-
-      <select
-        onChange={(e) => setSelectedCity(e.target.value)}
-        value={selectedCity}
-        disabled={!selectedCountry}
-      >
-        <option value="">Şehir Seçin</option>
-        {cities.map((city) => (
-          <option key={city.id} value={city.id}>
-            {city.name}
-          </option>
-        ))}
-      </select>
-
-      <MapComponent attractions={attractions} setAttractions={setAttractions} />
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };

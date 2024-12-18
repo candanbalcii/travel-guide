@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
+import 'leaflet/dist/leaflet.css';
 
 import Navbar from './components/Navbar'; // Import Navbar component
 
