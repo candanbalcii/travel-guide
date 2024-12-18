@@ -1,9 +1,11 @@
-//bu dosya API rotalarını tanımlıyor
+// authRoutes.js
 const express = require('express');
-const router = express.Router(); //router nesnesini oluşturduk, http isteklerini belirli yollar için yönlendirmeyi sağlar.
-const authController = require('./authController.js');
+const router = express.Router();
+const authController = require('./authController');
 
-router.post('/signup', authController.signup); //signup rotasına yapılan http post isteklerini fonksiyona yönlendiriyor, ve kullanıcı kayıt yapacak fonksiyonu çağırmış oluyor
+// Define routes
+router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
+// Export the router
 module.exports = router;

@@ -1,12 +1,7 @@
 import {
   Grid,
-  TextField,
   Typography,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
@@ -14,7 +9,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import SubmitButton from '../components/SubmitButton';
-import { signupSchema } from '../schemas/signupSchema';
+import { signupSchema } from '../schemas/signupSchema'; // Şemayı buradan alıyoruz
 import FormInput from '../components/FormInput';
 
 const Signup = () => {
@@ -28,31 +23,32 @@ const Signup = () => {
     try {
       const response = await fetch('http://localhost:5000/api/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
+          firstName: values.firstName,
+          lastName: values.lastName,
           email: values.email,
           password: values.password,
-          role: values.role,
-          company_name: values.company_name,
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json(); // Sunucudan dönen veriyi al
-
-        console.log('Signup successful!');
-        localStorage.setItem('user', JSON.stringify(data));
-        navigate('/success'); // Örnek yönlendirme
-      } else {
-        console.error('Error during signup');
-        setError('Signup failed. Please try again.');
+      if (!response.ok) {
+        throw new Error('Failed to sign up');
       }
+
+      const data = await response.json();
+      console.log('Signup successful:', data);
+
+      // Kullanıcıyı başarıyla kaydettikten sonra yönlendirme
+      navigate('/login'); // Ya da başka bir sayfaya yönlendirme
     } catch (error) {
-      console.error('An error occurred:', error);
-      setError('An error occurred. Please try again later.');
-    } finally {
-      setSubmitting(false);
+      console.error('Error during signup:', error);
+      setError('An error occurred while signing up. Please try again.');
     }
+
+    setSubmitting(false);
   };
 
   return (
@@ -77,16 +73,33 @@ const Signup = () => {
 
         <Formik
           initialValues={{
+            firstName: '',
+            lastName: '',
             email: '',
             password: '',
-            role: 'tester',
-            company_name: '',
+            keepLoggedIn: false,
           }}
-          validationSchema={signupSchema}
+          validationSchema={signupSchema} // Burada şemayı kullanıyoruz
           onSubmit={handleSubmit}
         >
           {({ values, handleChange, errors, touched, isSubmitting }) => (
             <Form>
+              <FormInput
+                label="First Name"
+                name="firstName"
+                value={values.firstName}
+                onChange={handleChange}
+                error={touched.firstName && Boolean(errors.firstName)}
+                helperText={touched.firstName && errors.firstName}
+              />
+              <FormInput
+                label="Last Name"
+                name="lastName"
+                value={values.lastName}
+                onChange={handleChange}
+                error={touched.lastName && Boolean(errors.lastName)}
+                helperText={touched.lastName && errors.lastName}
+              />
               <FormInput
                 label="Email"
                 name="email"
@@ -106,20 +119,6 @@ const Signup = () => {
                 helperText={touched.password && errors.password}
               />
 
-              {values.role === 'owner' && (
-                <TextField
-                  label="Company Name"
-                  name="company_name"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  value={values.company_name}
-                  onChange={handleChange}
-                  error={touched.company_name && Boolean(errors.company_name)}
-                  helperText={touched.company_name && errors.company_name}
-                  required
-                />
-              )}
               <Box
                 sx={{
                   display: 'flex',
@@ -144,7 +143,7 @@ const Signup = () => {
                   {error}
                 </Typography>
               )}
-              <SubmitButton text="Sign In" disabled={isSubmitting} />
+              <SubmitButton text="Sign Up" disabled={isSubmitting} />
             </Form>
           )}
         </Formik>
@@ -157,7 +156,7 @@ const Signup = () => {
         sm={6}
         md={7}
         sx={{
-          backgroundImage: 'url(/images/kayıt.jpg  )',
+          backgroundImage: 'url(/images/kayıt.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: '100vh',

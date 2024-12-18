@@ -35,11 +35,7 @@ const Login = () => {
         console.log('Login successful!', data);
         localStorage.setItem('user', JSON.stringify(data.user)); // Kullanıcı bilgilerini sakla
 
-        if (data.user.role === 'tester') {
-          navigate('/tester-dashboard');
-        } else if (data.user.role === 'owner') {
-          navigate('/owner-dashboard');
-        }
+        navigate('/home'); // Ana sayfaya yönlendirme
       } else {
         const errorData = await response.json();
         setErrors({ email: errorData.message });
