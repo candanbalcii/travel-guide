@@ -54,25 +54,34 @@ const HomePage = () => {
   }, [query]); // query değişkenine bağlı olarak efekt tetiklenir
 
   const handleSubmitReview = async () => {
-    if (!selectedLocation) return;
-
+    if (!selectedLocation) {
+      setError('Bir konum seçmelisiniz');
+      return;
+    }
+  
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/reviews', {
-        locationId: selectedLocation.id,
+      const response = await axios.post('http://localhost:5000/api/reviews', {
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
         rating,
         review,
       });
+      
+  
+      // Başarı durumunda kullanıcıya bildirim
       alert('Yorum başarıyla gönderildi!');
       setRating(0);
       setReview('');
     } catch (err) {
       setError('Yorum gönderilirken bir hata oluştu.');
+      console.error('Yorum gönderilirken hata:', err);
     } finally {
       setLoading(false);
     }
   };
-
+  
+  
   // Özel ikonunuzu buraya ekleyin
   const customIcon = new L.Icon({
     iconUrl: '/images/pin.png', // Buraya özel ikonun yolunu koyun
