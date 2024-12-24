@@ -1,10 +1,10 @@
 // authController.js
 const bcrypt = require('bcryptjs');
-const db = require('./dbConfig'); // Veritabanı bağlantısı
+const db = require('./dbConfig'); //veritabanı bağlantısı
 const jwt = require('jsonwebtoken');
 
 exports.signup = (req, res) => {
-  console.log('Signup endpoint hit'); // Bu log'un console'a yazılıp yazılmadığını kontrol edin.
+  console.log('Signup endpoint hit');
 
   const { firstName, lastName, email, password } = req.body;
   if (!firstName || !lastName || !email || !password) {

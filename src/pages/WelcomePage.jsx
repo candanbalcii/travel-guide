@@ -27,7 +27,7 @@ const WelcomePage = () => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '80vh',
-        color: 'black',
+        color: 'white', // Set text color to white
         textAlign: 'center',
         textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
         padding: 5,
@@ -39,10 +39,10 @@ const WelcomePage = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundImage: 'url(/images/welcome.jpg)',
+          backgroundImage: 'url(/images/welcome.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          opacity: 0.5,
+          opacity: 0.7,
           zIndex: -1,
         },
       }}
@@ -57,8 +57,8 @@ const WelcomePage = () => {
       <Box
         sx={{
           marginTop: 4,
-          maxWidth: '800px', // yazının genişliğini sınırlayın
-          textAlign: 'left', //yazının sola hizalanmasını sağlar
+          maxWidth: '800px', // Limit text width
+          textAlign: 'left', // Align text to the left
         }}
       >
         <Typography variant="body1" paragraph gutterBottom>
@@ -74,8 +74,8 @@ const WelcomePage = () => {
       {isMoreInfoVisible && (
         <Box
           sx={{
-            maxWidth: '800px', // İsteğe bağlı: Yazının genişliğini sınırlayın
-            textAlign: 'left', // Yazının sola hizalanmasını sağlar
+            maxWidth: '800px', // Optional: Limit text width
+            textAlign: 'left', // Align text to the left
           }}
         >
           TravelGuide is your ultimate companion for exploring the world with
@@ -85,7 +85,7 @@ const WelcomePage = () => {
         </Box>
       )}
       <Box sx={{ marginTop: 4 }}>
-        <Button variant="outlined" color="black" onClick={handleLearnMore}>
+        <Button variant="outlined" color="white" onClick={handleLearnMore}>
           {isMoreInfoVisible ? 'Show Less' : 'Learn More'}
         </Button>
       </Box>

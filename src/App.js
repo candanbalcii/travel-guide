@@ -3,9 +3,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
 import 'leaflet/dist/leaflet.css';
 
-import Navbar from './components/Navbar'; // Import Navbar component
+import Navbar from './components/Navbar';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );

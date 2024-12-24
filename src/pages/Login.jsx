@@ -12,6 +12,7 @@ import SubmitButton from '../components/SubmitButton';
 import { useNavigate } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import { loginSchema } from '../schemas/loginSchema';
+import { jwtDecode } from 'jwt-decode'; // Doğru import
 
 const Login = () => {
   const navigate = useNavigate();
@@ -33,9 +34,20 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful!', data);
-        localStorage.setItem('user', JSON.stringify(data.user)); // Kullanıcı bilgilerini sakla
 
-        navigate('/home'); // Ana sayfaya yönlendirme
+        //tokenı local storage kaydettik
+        localStorage.setItem('token', data.token);
+
+        // token decode ederek userid aldık
+        const decodedToken = jwtDecode(data.token); //tokenı decode ediyoruz
+        const userId = decodedToken.userId;
+
+        localStorage.setItem('user_id', userId); //user ID'yi de localStorage'a kaydediyoruz
+
+        console.log('Frotend test Token:', localStorage.getItem('token'));
+        console.log('User ID:', localStorage.getItem('user_id'));
+
+        navigate('/home');
       } else {
         const errorData = await response.json();
         setErrors({ email: errorData.message });
@@ -96,6 +108,8 @@ const Login = () => {
             initialValues={{ email: '', password: '', keepLoggedIn: false }}
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
+            validateOnChange={true} // Her değişiklikte doğrulama yapılacak
+            validateOnBlur={true} // Her blur (input dışına çıkma) olayında doğrulama yapılacak
           >
             {({ values, handleChange, errors, touched, isSubmitting }) => (
               <Form>
@@ -104,8 +118,8 @@ const Login = () => {
                   name="email"
                   value={values.email}
                   onChange={handleChange}
-                  error={touched.email && Boolean(errors.email)}
-                  helperText={touched.email && errors.email}
+                  error={touched.email && Boolean(errors.email)} // Hata varsa göster
+                  helperText={touched.email && errors.email} // Hata mesajını göster
                 />
                 <FormInput
                   label="Password"
@@ -114,8 +128,8 @@ const Login = () => {
                   value={values.password}
                   required
                   onChange={handleChange}
-                  error={touched.password && Boolean(errors.password)}
-                  helperText={touched.password && errors.password}
+                  error={touched.password && Boolean(errors.password)} // Hata varsa göster
+                  helperText={touched.password && errors.password} // Hata mesajını göster
                 />
                 <Box
                   sx={{

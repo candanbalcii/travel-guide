@@ -2,14 +2,7 @@ import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import {
-  TextField,
-  Button,
-  Rating,
-  Typography,
-  Box,
-  CircularProgress,
-} from '@mui/material';
+import { TextField, Button, Rating, Typography, Box } from '@mui/material';
 import { Info as InfoIcon } from '@mui/icons-material';
 
 const MapComponent = ({ attractions, setAttractions }) => {
@@ -33,7 +26,7 @@ const MapComponent = ({ attractions, setAttractions }) => {
             key={location.id}
             position={[location.latitude, location.longitude]}
             eventHandlers={{
-              click: () => setSelectedLocation(location), // Tıklama olayı
+              click: () => setSelectedLocation(location),
             }}
           >
             <Popup>{location.name}</Popup>
@@ -41,7 +34,7 @@ const MapComponent = ({ attractions, setAttractions }) => {
         ))}
       </MapContainer>
 
-      {/* Sağdaki Form */}
+      {/*form*/}
       <div
         style={{
           width: '30%',
@@ -51,7 +44,6 @@ const MapComponent = ({ attractions, setAttractions }) => {
           position: 'relative',
         }}
       >
-        {/* Eğer bir konum seçilmemişse bilgilendirme mesajı */}
         {!selectedLocation ? (
           <Box
             sx={{
@@ -88,7 +80,7 @@ const MapComponent = ({ attractions, setAttractions }) => {
 
             <Box mb={2}>
               <Typography variant="body1" gutterBottom>
-                Yıldız Puanı
+                Star Rating
               </Typography>
               <Rating
                 name="simple-controlled"
@@ -112,7 +104,7 @@ const MapComponent = ({ attractions, setAttractions }) => {
             </Box>
 
             <Button variant="contained" color="primary" fullWidth>
-              Gönder
+              Send
             </Button>
           </div>
         )}
