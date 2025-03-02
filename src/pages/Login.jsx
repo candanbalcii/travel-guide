@@ -12,8 +12,7 @@ import SubmitButton from '../components/SubmitButton';
 import { useNavigate } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import { loginSchema } from '../schemas/loginSchema';
-import { jwtDecode } from 'jwt-decode'; // Doğru import
-
+import { jwtDecode } from 'jwt-decode';
 const Login = () => {
   const navigate = useNavigate();
 
@@ -35,14 +34,14 @@ const Login = () => {
         const data = await response.json();
         console.log('Login successful!', data);
 
-        //tokenı local storage kaydettik
+        //tokenı local storage kaydoluyor
         localStorage.setItem('token', data.token);
 
-        // token decode ederek userid aldık
-        const decodedToken = jwtDecode(data.token); //tokenı decode ediyoruz
+        // token decode ederek userid aldı
+        const decodedToken = jwtDecode(data.token);
         const userId = decodedToken.userId;
 
-        localStorage.setItem('user_id', userId); //user ID'yi de localStorage'a kaydediyoruz
+        localStorage.setItem('user_id', userId);
 
         console.log('Frotend test Token:', localStorage.getItem('token'));
         console.log('User ID:', localStorage.getItem('user_id'));
@@ -75,7 +74,7 @@ const Login = () => {
         }}
       ></Grid>
 
-      {/* Form section */}
+      {/* Form  */}
       <Grid
         item
         xs={12}
@@ -87,7 +86,6 @@ const Login = () => {
           alignItems: 'center',
           justifyContent: 'center',
           padding: 3,
-          backgroundColor: 'white',
         }}
       >
         <Box>
@@ -109,7 +107,7 @@ const Login = () => {
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
             validateOnChange={true} // Her değişiklikte doğrulama yapılacak
-            validateOnBlur={true} // Her blur (input dışına çıkma) olayında doğrulama yapılacak
+            validateOnBlur={true}
           >
             {({ values, handleChange, errors, touched, isSubmitting }) => (
               <Form>
@@ -118,8 +116,8 @@ const Login = () => {
                   name="email"
                   value={values.email}
                   onChange={handleChange}
-                  error={touched.email && Boolean(errors.email)} // Hata varsa göster
-                  helperText={touched.email && errors.email} // Hata mesajını göster
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
                 />
                 <FormInput
                   label="Password"

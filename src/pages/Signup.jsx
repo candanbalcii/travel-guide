@@ -6,7 +6,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import SubmitButton from '../components/SubmitButton';
 import { signupSchema } from '../schemas/signupSchema'; // Şemayı buradan alıyoruz
@@ -41,8 +41,7 @@ const Signup = () => {
       const data = await response.json();
       console.log('Signup successful:', data);
 
-      // Kullanıcıyı başarıyla kaydettikten sonra yönlendirme
-      navigate('/login'); // Ya da başka bir sayfaya yönlendirme
+      navigate('/login');
     } catch (error) {
       console.error('Error during signup:', error);
       setError('An error occurred while signing up. Please try again.');
@@ -70,6 +69,16 @@ const Signup = () => {
         <Typography variant="h4" gutterBottom>
           Get Started With Us
         </Typography>
+        <Typography>
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            variant="body2"
+            sx={{ textDecoration: 'none', color: '#355C7D' }}
+          >
+            Login
+          </Link>
+        </Typography>
 
         <Formik
           initialValues={{
@@ -79,7 +88,7 @@ const Signup = () => {
             password: '',
             keepLoggedIn: false,
           }}
-          validationSchema={signupSchema} // Burada şemayı kullanıyoruz
+          validationSchema={signupSchema}
           onSubmit={handleSubmit}
         >
           {({ values, handleChange, errors, touched, isSubmitting }) => (
