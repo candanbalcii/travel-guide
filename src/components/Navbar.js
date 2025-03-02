@@ -1,16 +1,15 @@
+import React, { useState } from 'react';
 import {
   AppBar,
   Box,
   Button,
   Toolbar,
-  Typography,
   IconButton,
   Menu,
   MenuItem,
+  Avatar,
 } from '@mui/material';
-import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -18,12 +17,10 @@ const Navbar = () => {
 
   const isLoggedIn = localStorage.getItem('token');
 
-  // Menu'yu açma
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Menu'yu kapama
   const handleProfileMenuClose = () => {
     setAnchorEl(null);
   };
@@ -38,13 +35,43 @@ const Navbar = () => {
     } else {
       console.error('Token silinemedi!');
     }
-    handleProfileMenuClose(); // Menü kapanması
+    handleProfileMenuClose();
+  };
+
+  const handleLogoClick = () => {
+    navigate('/home');
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#4682B4' }}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h6">TravelGuide</Typography>
+    <AppBar
+      position="static"
+      sx={{
+        background: 'linear-gradient(to right, #FF7F50, #00BFFF)',
+        fontWeight: 'bold',
+        padding: '0 2rem',
+      }}
+    >
+      <Toolbar
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <img
+            src="/images/tglogo.png"
+            alt="Logo"
+            style={{
+              height: '50px',
+              width: 'auto',
+              marginRight: '20px',
+              cursor: 'pointer',
+            }}
+            onClick={handleLogoClick}
+          />
+        </Box>
+
         <Box
           sx={{
             display: 'flex',
@@ -52,23 +79,68 @@ const Navbar = () => {
             justifyContent: 'flex-end',
           }}
         >
-          <Button color="black" component={Link} to="/">
+          <Button
+            color="inherit"
+            component={Link}
+            to="/home"
+            sx={{
+              marginRight: '20px',
+              '&:hover': {
+                backgroundColor: '#00BFFF',
+                transform: 'scale(1.1)',
+              },
+              transition: 'transform 0.2s',
+            }}
+          >
             Home
           </Button>
 
+          <Button
+            color="inherit"
+            component={Link}
+            to="/albums"
+            sx={{
+              marginRight: '20px',
+              '&:hover': {
+                backgroundColor: '#00BFFF',
+                transform: 'scale(1.1)',
+              },
+              transition: 'transform 0.2s',
+            }}
+          >
+            Trip Albums
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/about-us"
+            sx={{
+              marginRight: '20px',
+              '&:hover': {
+                backgroundColor: '#00BFFF',
+                transform: 'scale(1.1)',
+              },
+              transition: 'transform 0.2s',
+            }}
+          >
+            About Us
+          </Button>
+
           {!isLoggedIn ? (
-            <>
-              <Button color="black" component={Link} to="/login">
-                Login
-              </Button>
-              <Button color="inherit" component={Link} to="/signup">
-                Signup
-              </Button>
-            </>
+            <></>
           ) : (
             <>
               <IconButton color="inherit" onClick={handleProfileMenuOpen}>
-                <AccountCircleIcon />
+                <Avatar
+                  src="/path-to-avatar.jpg"
+                  alt="Profile"
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    '&:hover': { transform: 'scale(1.1)' },
+                    transition: 'transform 0.2s',
+                  }}
+                />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
@@ -77,12 +149,30 @@ const Navbar = () => {
               >
                 <MenuItem
                   component={Link}
-                  to="/profile"
+                  to="/profile/:userId"
                   onClick={handleProfileMenuClose}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: '#00BFFF',
+                      transform: 'scale(1.05)',
+                    },
+                    transition: 'transform 0.2s',
+                  }}
                 >
                   My Profile
                 </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: '#00BFFF',
+                      transform: 'scale(1.05)',
+                    },
+                    transition: 'transform 0.2s',
+                  }}
+                >
+                  Logout
+                </MenuItem>
               </Menu>
             </>
           )}

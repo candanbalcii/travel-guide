@@ -1,21 +1,12 @@
-import { Box, Button, Grid, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, Button, Typography } from '@mui/material';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
-  const [isMoreInfoVisible, setIsMoreInfoVisible] = useState(false);
-
-  const handleLogin = () => {
-    navigate('/login');
-  };
 
   const handleSignup = () => {
     navigate('/signup');
-  };
-
-  const handleLearnMore = () => {
-    setIsMoreInfoVisible(!isMoreInfoVisible);
   };
 
   return (
@@ -27,66 +18,51 @@ const WelcomePage = () => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '80vh',
-        color: 'white', // Set text color to white
+        color: 'white',
         textAlign: 'center',
         textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
         padding: 5,
         overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundImage: 'url(/images/welcome.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.7,
-          zIndex: -1,
-        },
+        backgroundImage:
+          'url(/images/background.png), linear-gradient(to right, #FF7F50, #00BFFF)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 38%',
       }}
     >
-      <Typography variant="h2" component="h1" gutterBottom>
+      <Typography
+        variant="h2"
+        component="h1"
+        sx={{ fontWeight: 'bold', letterSpacing: 1, marginBottom: '16px' }}
+      >
         Welcome to TravelGuide!
       </Typography>
-      <Typography variant="h4" gutterBottom>
-        Discover the world, one destination at a time. Plan your adventures,
-        explore hidden gems, and create unforgettable memories!
-      </Typography>
-      <Box
+      <Typography
+        variant="h5"
         sx={{
-          marginTop: 4,
-          maxWidth: '800px', // Limit text width
-          textAlign: 'left', // Align text to the left
+          fontWeight: '300',
+          maxWidth: '500px',
+          lineHeight: 1.6,
+          marginBottom: '24px',
         }}
+        gutterBottom
       >
-        <Typography variant="body1" paragraph gutterBottom>
-          Our platform offers a comprehensive suite of tools designed to help
-          you gather valuable user feedback and conduct usability testing with
-          ease. Whether you're developing a new travel application or enhancing
-          an existing one, TravelGuide provides a collaborative environment that
-          ensures efficient testing and insightful feedback from real travelers.
-          Plan, explore, and improve your travel experiences with confidence
-          using TravelGuide!
-        </Typography>
-      </Box>
-      {isMoreInfoVisible && (
-        <Box
-          sx={{
-            maxWidth: '800px', // Optional: Limit text width
-            textAlign: 'left', // Align text to the left
-          }}
-        >
-          TravelGuide is your ultimate companion for exploring the world with
-          ease and excitement. Whether you're planning your next vacation,
-          discovering hidden gems, or dreaming of far-off destinations, our
-          platform is here to inspire and guide you every step of the way.
-        </Box>
-      )}
+        Discover breathtaking destinations, plan unforgettable adventures, and
+        explore the world with ease.
+      </Typography>
+
       <Box sx={{ marginTop: 4 }}>
-        <Button variant="outlined" color="white" onClick={handleLearnMore}>
-          {isMoreInfoVisible ? 'Show Less' : 'Learn More'}
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: 'white',
+            color: '#FF7F50',
+            fontWeight: 'bold',
+            padding: '0.7rem 1.5rem',
+            '&:hover': { backgroundColor: '#f5f5f5' },
+          }}
+          onClick={handleSignup}
+        >
+          Get Started
         </Button>
       </Box>
     </Box>
