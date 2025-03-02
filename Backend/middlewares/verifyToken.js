@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-//token doğrulama middleware
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
@@ -18,8 +17,8 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    req.user = decoded;
-    next();
+    console.log('Decoded Token:', decoded);
+    req.user = decoded; // User bilgilerini req.user olarak ekledim
   } catch (err) {
     console.error('Token doğrulama hatası:', err);
     return res.status(401).json({ error: 'Geçersiz token.' });

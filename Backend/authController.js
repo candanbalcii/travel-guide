@@ -1,6 +1,6 @@
-// authController.js
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const db = require('./dbConfig'); //veritabanı bağlantısı
+const db = require('./dbConfig');
 const jwt = require('jsonwebtoken');
 
 exports.signup = (req, res) => {
@@ -35,7 +35,6 @@ exports.signup = (req, res) => {
   });
 };
 
-// Login function (example)
 exports.login = (req, res) => {
   const { email, password } = req.body;
 
@@ -64,8 +63,9 @@ exports.login = (req, res) => {
       if (!isMatch) {
         return res.status(400).json({ error: 'Invalid credentials' });
       }
+      console.log('JWT_SECRET_KEY:', process.env.JWT_SECRET_KEY);
 
-      const token = jwt.sign({ userId: user.id }, 'your_jwt_secret', {
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
         expiresIn: '1h',
       });
       res.status(200).json({ message: 'Login successful', token });

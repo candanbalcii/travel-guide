@@ -4,6 +4,10 @@ const app = express();
 const authRoutes = require('./authRoutes');
 const mysql = require('mysql2');
 
+const path = require('path');
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
